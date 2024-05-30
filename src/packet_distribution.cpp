@@ -190,17 +190,13 @@ void AOApplication::server_packet_received(AOPacket packet)
       return;
     }
 
-    for (int n_char = 0; n_char < content.size(); ++n_char)
+    QVector<CharacterSlot> slots = w_courtroom->characterList();
+    for (int i = 0; i < slots.size(); i++)
     {
-      if (content.at(n_char) == "-1")
-      {
-        w_courtroom->set_taken(n_char, true);
-      }
-      else
-      {
-        w_courtroom->set_taken(n_char, false);
-      }
+      slots[i].is_taken = content.at(i) == "-1";
     }
+    w_courtroom->setCharacterList(slots);
+
     log_to_demo = false;
   }
 
@@ -210,27 +206,15 @@ void AOApplication::server_packet_received(AOPacket packet)
     {
       return;
     }
-    w_courtroom->clear_chars();
-    for (int n_element = 0; n_element < content.size(); ++n_element)
+
+    QVector<CharacterSlot> slots;
+    for (const QString &i_character_data : qAsConst(content))
     {
-      QStringList sub_elements = content.at(n_element).split("&");
-      for (QString &sub_element : sub_elements)
-      {
-        sub_element = AOPacket::decode(sub_element);
-      }
-
-      CharacterSlot f_char;
-      f_char.name = sub_elements.at(0);
-      if (sub_elements.size() >= 2)
-      {
-        f_char.description = sub_elements.at(1);
-      }
-
-      // temporary. the CharsCheck packet sets this properly
-      f_char.taken = false;
-
-      w_courtroom->append_char(f_char);
+      CharacterSlot slot;
+      slot.name = i_character_data.split("&").at(0);
+      slots.append(slot);
     }
+    w_courtroom->setCharacterList(slots);
 
     if (!courtroom_loaded)
     {

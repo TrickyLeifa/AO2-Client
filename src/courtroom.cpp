@@ -569,11 +569,6 @@ void Courtroom::update_audio_volume()
   blip_player->setVolume(ui_blip_slider->value() * remaining_percent);
 }
 
-void Courtroom::append_char(CharacterSlot p_char)
-{
-  char_list.append(p_char);
-}
-
 void Courtroom::append_music(QString f_music)
 {
   music_list.append(f_music);
@@ -582,11 +577,6 @@ void Courtroom::append_music(QString f_music)
 void Courtroom::append_area(QString f_area)
 {
   area_list.append(f_area);
-}
-
-void Courtroom::clear_chars()
-{
-  char_list.clear();
 }
 
 void Courtroom::clear_music()
@@ -1339,23 +1329,6 @@ void Courtroom::set_size_and_pos(QWidget *p_widget, QString p_identifier, QStrin
     p_widget->move(design_ini_result.x, design_ini_result.y);
     p_widget->resize(design_ini_result.width, design_ini_result.height);
   }
-}
-
-void Courtroom::set_taken(int n_char, bool p_taken)
-{
-  if (n_char >= char_list.size())
-  {
-    qWarning() << "set_taken attempted to set an index bigger than char_list size";
-    return;
-  }
-
-  CharacterSlot f_char;
-  f_char.name = char_list.at(n_char).name;
-  f_char.description = char_list.at(n_char).description;
-  f_char.taken = p_taken;
-  f_char.evidence_string = char_list.at(n_char).evidence_string;
-
-  char_list.replace(n_char, f_char);
 }
 
 void Courtroom::done_received()
@@ -2259,10 +2232,10 @@ void Courtroom::on_chat_return_pressed()
     QStringList emotes_to_check = {pre_emote, "(b)" + emote, "(a)" + emote};
     QStringList effects_to_check = {"_FrameScreenshake", "_FrameRealization", "_FrameSFX"};
 
-    foreach (QString f_effect, effects_to_check)
+    for (QString f_effect : effects_to_check)
     {
       QString packet;
-      foreach (QString f_emote, emotes_to_check)
+      for (QString f_emote : emotes_to_check)
       {
         packet += f_emote;
         if (Options::getInstance().networkedFrameSfxEnabled())
@@ -4963,7 +4936,7 @@ void Courtroom::on_ooc_return_pressed()
     std::sort(case_evidence.begin(), case_evidence.end(), [](const QString &a, const QString &b) { return a.toInt() < b.toInt(); });
 
     // load evidence
-    foreach (QString evi, case_evidence)
+    for (QString evi : case_evidence)
     {
       if (evi == "General")
       {
@@ -5113,7 +5086,7 @@ void Courtroom::on_music_search_edited(QString p_text)
     {
       // Search in metadata
       QList<QTreeWidgetItem *> clist = ui_music_list->findItems(ui_music_search->text(), Qt::MatchContains | Qt::MatchRecursive, 1);
-      foreach (QTreeWidgetItem *item, clist)
+      for (QTreeWidgetItem *item : clist)
       {
         if (item->parent() != nullptr) // So the category shows up too
         {
@@ -5127,7 +5100,7 @@ void Courtroom::on_music_search_edited(QString p_text)
     {
       // Search in metadata
       QList<QTreeWidgetItem *> alist = ui_area_list->findItems(ui_music_search->text(), Qt::MatchContains | Qt::MatchRecursive, 1);
-      foreach (QTreeWidgetItem *item, alist)
+      for (QTreeWidgetItem *item : alist)
       {
         if (item->parent() != nullptr) // So the category shows up too
         {
@@ -5982,7 +5955,7 @@ void Courtroom::show_custom_objection_menu(const QPoint &pos)
     }
     else
     {
-      foreach (CustomObjection custom_objection, custom_objections_list)
+      for (CustomObjection custom_objection : custom_objections_list)
       {
         if (custom_objection.name == selecteditem->text())
         {
@@ -6444,7 +6417,7 @@ void Courtroom::regenerate_ic_chatlog()
 {
   ui_ic_chatlog->clear();
   last_ic_message = "";
-  foreach (ChatLogPiece item, ic_chatlog_history)
+  for (ChatLogPiece item : ic_chatlog_history)
   {
     QString message = item.message;
     QString name = ui_showname_enable->isChecked() ? item.character_name : item.character;

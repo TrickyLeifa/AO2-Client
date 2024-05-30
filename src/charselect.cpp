@@ -274,7 +274,7 @@ void Courtroom::character_loading_finished()
   ao_app->generated_chars = 0;
   if (ui_char_button_list.size() > 0)
   {
-    foreach (AOCharButton *item, ui_char_button_list)
+    for (AOCharButton *item : ui_char_button_list)
     {
       delete item;
     }
@@ -293,7 +293,7 @@ void Courtroom::character_loading_finished()
     char_button->setContextMenuPolicy(Qt::CustomContextMenu);
     char_button->hide();
     char_button->setCharacter(character.name);
-    char_button->setTaken(character.taken);
+    char_button->setTaken(character.is_taken);
     char_button->setToolTip(character.name);
     ui_char_button_list.append(char_button);
     QString char_category = ao_app->get_category(character.name);
@@ -352,7 +352,7 @@ void Courtroom::filter_character_list()
     // if (ui_char_passworded->isChecked() && character_is_passworded??)
     //    continue;
 
-    if (!ui_char_taken->isChecked() && char_list.at(i).taken)
+    if (!ui_char_taken->isChecked() && char_list.at(i).is_taken)
     {
       current_char_list_item->setHidden(true);
       continue;
@@ -368,11 +368,11 @@ void Courtroom::filter_character_list()
     // for the buttons that actually appear.
     // You'd also update the passwordedness and etc. here later.
     current_char_list_item->setHidden(false);
-    current_char->setTaken(char_list.at(i).taken);
+    current_char->setTaken(char_list.at(i).is_taken);
     current_char_list_item->setText(0, char_list.at(i).name);
     // reset disabled
     current_char_list_item->setDisabled(false);
-    if (char_list.at(i).taken) // woops, we are taken
+    if (char_list.at(i).is_taken) // woops, we are taken
     {
       current_char_list_item->setDisabled(true);
     }

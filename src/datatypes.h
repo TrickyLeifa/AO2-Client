@@ -22,12 +22,11 @@ struct ServerInfo
   inline QString toString() { return QString("%1 (<%2>%3:%4)").arg(name, SERVER_CONNECTION_TYPE_STRING_MAP.key(socket_type), ip, QString::number(port)); }
 };
 
-struct CharacterSlot
+class CharacterSlot
 {
+public:
   QString name;
-  QString description;
-  QString evidence_string;
-  bool taken;
+  bool is_taken = false;
 };
 
 struct EvidenceItem

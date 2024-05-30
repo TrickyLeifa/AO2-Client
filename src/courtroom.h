@@ -76,12 +76,13 @@ public:
 
   void update_audio_volume();
 
-  void append_char(CharacterSlot p_char);
   void append_music(QString f_music);
   void append_area(QString f_area);
-  void clear_chars();
   void clear_music();
   void clear_areas();
+
+  QVector<CharacterSlot> characterList() const { return char_list; }
+  void setCharacterList(const QVector<CharacterSlot> &characterList) { char_list = characterList; }
 
   void fix_last_area();
 
@@ -120,10 +121,6 @@ public:
 
   // reads theme and sets size and pos based on the identifier (using p_misc if provided)
   void set_size_and_pos(QWidget *p_widget, QString p_identifier, QString p_misc = QString());
-
-  // sets status as taken on character with cid n_char and places proper shading
-  // on charselect
-  void set_taken(int n_char, bool p_taken);
 
   // sets the current background to argument. also does some checks to see if
   // it's a legacy bg

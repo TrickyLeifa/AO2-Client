@@ -112,7 +112,7 @@ add_executable(SpriteChat
   data.qrc
 )
 
-target_compile_definitions(SpriteChat PUBLIC QT_NO_KEYWORDS)
+target_compile_definitions(SpriteChat PUBLIC QT_NO_KEYWORDS QT_MESSAGELOGCONTEXT)
 target_include_directories(SpriteChat PRIVATE src lib)
 target_link_directories(SpriteChat PRIVATE lib)
 target_link_libraries(SpriteChat PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Concurrent Qt${QT_VERSION_MAJOR}::WebSockets Qt${QT_VERSION_MAJOR}::UiTools bass bassopus bassmidi)

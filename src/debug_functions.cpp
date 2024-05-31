@@ -55,3 +55,14 @@ void call_notice(QString p_message)
 
   msgBox->exec();
 }
+
+void call_message_error(QString message, QtMsgType messageType)
+{
+  QMessageBox *box = new QMessageBox;
+  box->setAttribute(Qt::WA_DeleteOnClose);
+  box->setWindowTitle(messageType == QtCriticalMsg ? "Critical Error" : "Error");
+  box->setIcon(QMessageBox::Critical);
+  box->setText(message);
+  box->setStandardButtons(QMessageBox::Ok);
+  box->exec();
+}

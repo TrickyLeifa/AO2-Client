@@ -1,9 +1,9 @@
 #include "direct_connect_dialog.h"
 
 #include "debug_functions.h"
-#include "gui_utils.h"
 #include "networkmanager.h"
 #include "options.h"
+#include "qtutil/qwidgetfinder.h"
 
 #include <QStringBuilder>
 #include <QUiLoader>
@@ -17,32 +17,35 @@ DirectConnectDialog::DirectConnectDialog(NetworkManager *netManager, QWidget *pa
     : QDialog(parent)
     , net_manager(netManager)
 {
-  QUiLoader l_loader(this);
-  QFile l_uiFile(Options::getInstance().getUIAsset(UI_FILE_PATH));
-
-  if (!l_uiFile.open(QFile::ReadOnly))
+  QFile file(Options::getInstance().getUIAsset(UI_FILE_PATH));
+  if (!file.open(QFile::ReadOnly))
   {
-    qCritical() << "Unable to open file " << l_uiFile.fileName();
+    qFatal("Failed to open file %s: %s", qPrintable(file.fileName()), qPrintable(file.errorString()));
     return;
   }
-  ui_widget = l_loader.load(&l_uiFile, this);
+
+  QUiLoader loader(this);
+  ui_widget = loader.load(&file, this);
 
   auto l_layout = new QVBoxLayout(this);
   l_layout->addWidget(ui_widget);
 
-  FROM_UI(QLineEdit, direct_hostname_edit);
+  qtutil::QWidgetFinder finder(ui_widget);
 
-  FROM_UI(QLabel, direct_connection_status_lbl);
+  finder.findChild(ui_direct_hostname_edit, "direct_hostname_edit");
+  finder.findChild(ui_direct_connection_status_lbl, "direct_connection_status_lbl");
+  finder.findChild(ui_direct_connect_button, "direct_connect_button");
+  finder.findChild(ui_direct_cancel_button, "direct_cancel_button");
 
-  FROM_UI(QPushButton, direct_connect_button);
-  connect(ui_direct_connect_button, &QPushButton::pressed, this, &DirectConnectDialog::onConnectPressed);
-  FROM_UI(QPushButton, direct_cancel_button);
+  m_connect_timeout.setSingleShot(true);
+
   connect(ui_direct_cancel_button, &QPushButton::pressed, this, &DirectConnectDialog::close);
+
+  connect(ui_direct_connect_button, &QPushButton::pressed, this, &DirectConnectDialog::onConnectPressed);
 
   connect(net_manager, &NetworkManager::server_connected, this, &DirectConnectDialog::onServerConnected);
 
   connect(&m_connect_timeout, &QTimer::timeout, this, &DirectConnectDialog::onConnectTimeout);
-  m_connect_timeout.setSingleShot(true);
 }
 
 void DirectConnectDialog::onConnectPressed()

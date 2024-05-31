@@ -100,12 +100,12 @@ void Courtroom::refresh_emotes()
 
 void Courtroom::set_emote_page()
 {
-  if (m_cid == -1)
+  if (m_character_id == -1)
   {
     return;
   }
 
-  int total_emotes = ao_app->get_emote_number(current_char);
+  int total_emotes = ao_app->get_emote_number(m_target_character);
 
   ui_emote_left->hide();
   ui_emote_right->hide();
@@ -153,15 +153,15 @@ void Courtroom::set_emote_page()
 
     if (n_real_emote == current_emote)
     {
-      f_emote->setImage(current_char, n_real_emote, true);
+      f_emote->setImage(m_target_character, n_real_emote, true);
     }
     else
     {
-      f_emote->setImage(current_char, n_real_emote, false);
+      f_emote->setImage(m_target_character, n_real_emote, false);
     }
 
     f_emote->show();
-    f_emote->setToolTip(QString::number(n_real_emote + 1) + ": " + ao_app->get_emote_comment(current_char, n_real_emote));
+    f_emote->setToolTip(QString::number(n_real_emote + 1) + ": " + ao_app->get_emote_comment(m_target_character, n_real_emote));
   }
 }
 
@@ -169,12 +169,12 @@ void Courtroom::set_emote_dropdown()
 {
   ui_emote_dropdown->clear();
 
-  int total_emotes = ao_app->get_emote_number(current_char);
+  int total_emotes = ao_app->get_emote_number(m_target_character);
 
   for (int n = 0; n < total_emotes; ++n)
   {
-    ui_emote_dropdown->addItem(QString::number(n + 1) + ": " + ao_app->get_emote_comment(current_char, n));
-    QString icon_path = ao_app->get_image_suffix(ao_app->get_character_path(current_char, "emotions/button" + QString::number(n + 1) + "_off"));
+    ui_emote_dropdown->addItem(QString::number(n + 1) + ": " + ao_app->get_emote_comment(m_target_character, n));
+    QString icon_path = ao_app->get_image_suffix(ao_app->get_character_path(m_target_character, "emotions/button" + QString::number(n + 1) + "_off"));
     ui_emote_dropdown->setItemIcon(n, QIcon(icon_path));
   }
   if (current_emote > -1 && current_emote < ui_emote_dropdown->count())
@@ -190,7 +190,7 @@ void Courtroom::select_emote(int p_id)
 
   if (current_emote >= min && current_emote <= max)
   {
-    ui_emote_list.at(current_emote % max_emotes_on_page)->setImage(current_char, current_emote, false);
+    ui_emote_list.at(current_emote % max_emotes_on_page)->setImage(m_target_character, current_emote, false);
   }
 
   int old_emote = current_emote;
@@ -199,10 +199,10 @@ void Courtroom::select_emote(int p_id)
 
   if (current_emote >= min && current_emote <= max)
   {
-    ui_emote_list.at(current_emote % max_emotes_on_page)->setImage(current_char, current_emote, true);
+    ui_emote_list.at(current_emote % max_emotes_on_page)->setImage(m_target_character, current_emote, true);
   }
 
-  int emote_mod = ao_app->get_emote_mod(current_char, current_emote);
+  int emote_mod = ao_app->get_emote_mod(m_target_character, current_emote);
 
   if (old_emote == current_emote)
   {
@@ -232,14 +232,14 @@ void Courtroom::update_emote_preview()
     return;
   }
 
-  QString pre = ao_app->get_pre_emote(current_char, current_emote);
+  QString pre = ao_app->get_pre_emote(m_target_character, current_emote);
   if (ui_pre->isChecked() && !pre.isEmpty() && pre != "-")
   {
     preview_emote(pre, kal::CharacterAnimationLayer::PreEmote);
   }
   else
   {
-    preview_emote(ao_app->get_emote(current_char, current_emote), kal::CharacterAnimationLayer::IdleEmote);
+    preview_emote(ao_app->get_emote(m_target_character, current_emote), kal::CharacterAnimationLayer::IdleEmote);
   }
 }
 
@@ -266,18 +266,18 @@ void Courtroom::show_emote_menu(const QPoint &pos)
     update_emote_preview();
   }));
   QString prefix;
-  QString f_pre = ao_app->get_pre_emote(current_char, emote_num);
+  QString f_pre = ao_app->get_pre_emote(m_target_character, emote_num);
   if (!f_pre.isEmpty() && f_pre != "-")
   {
     emote_menu->addAction("Preview pre: " + f_pre, this, [this, f_pre] { preview_emote(f_pre, kal::CharacterAnimationLayer::PreEmote); });
   }
 
-  QString f_emote = ao_app->get_emote(current_char, emote_num);
+  QString f_emote = ao_app->get_emote(m_target_character, emote_num);
   if (!f_emote.isEmpty())
   {
     emote_menu->addAction("Preview idle: " + f_emote, this, [this, f_emote] { preview_emote(f_emote, kal::CharacterAnimationLayer::IdleEmote); });
     emote_menu->addAction("Preview talk: " + f_emote, this, [this, f_emote] { preview_emote(f_emote, kal::CharacterAnimationLayer::TalkEmote); });
-    QStringList c_paths = {ao_app->get_image_suffix(ao_app->get_character_path(current_char, "(c)" + f_emote)), ao_app->get_image_suffix(ao_app->get_character_path(current_char, "(c)/" + f_emote))};
+    QStringList c_paths = {ao_app->get_image_suffix(ao_app->get_character_path(m_target_character, "(c)" + f_emote)), ao_app->get_image_suffix(ao_app->get_character_path(m_target_character, "(c)/" + f_emote))};
     // if there is a (c) animation
     if (file_exists(ao_app->find_image(c_paths)))
     {
@@ -292,7 +292,7 @@ void Courtroom::preview_emote(QString f_emote, kal::CharacterAnimationLayer::Emo
   emote_preview->show();
   emote_preview->raise();
   emote_preview->updateViewportGeometry();
-  emote_preview->display(current_char, f_emote, emoteType, ui_flip->isChecked(), ui_pair_offset_spinbox->value(), ui_pair_vert_offset_spinbox->value());
+  emote_preview->display(m_target_character, f_emote, emoteType, ui_flip->isChecked(), ui_pair_offset_spinbox->value(), ui_pair_vert_offset_spinbox->value());
 }
 
 void Courtroom::on_emote_left_clicked()

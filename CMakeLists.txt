@@ -22,6 +22,10 @@ find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui Network Widgets Concurrent WebSockets UiTools)
 
 add_executable(SpriteChat
+  src/animationlayer.cpp
+  src/animationlayer.h
+  src/animationloader.cpp
+  src/animationloader.h
   src/aoapplication.cpp
   src/aoapplication.h
   src/aoblipplayer.cpp
@@ -42,10 +46,6 @@ add_executable(SpriteChat
   src/aoevidencedisplay.h
   src/aoimage.cpp
   src/aoimage.h
-  src/animationlayer.cpp
-  src/animationlayer.h
-  src/animationloader.h
-  src/animationloader.cpp
   src/aomusicplayer.cpp
   src/aomusicplayer.h
   src/aopacket.cpp
@@ -58,6 +58,9 @@ add_executable(SpriteChat
   src/aotextboxwidgets.h
   src/aoutils.cpp
   src/aoutils.h
+  src/characterselect.cpp src/characterselect.h
+  src/characterselectlayout.cpp src/characterselectlayout.h
+  src/characterslotbutton.cpp src/characterslotbutton.h
   src/charselect.cpp
   src/chatlogpiece.cpp
   src/chatlogpiece.h
@@ -76,7 +79,6 @@ add_executable(SpriteChat
   src/evidence.cpp
   src/file_functions.cpp
   src/file_functions.h
-  src/gui_utils.h
   src/hardware_functions.cpp
   src/hardware_functions.h
   src/lobby.cpp
@@ -94,6 +96,8 @@ add_executable(SpriteChat
   src/options.h
   src/packet_distribution.cpp
   src/path_functions.cpp
+  src/qtutil/qwidgetfinder.cpp
+  src/qtutil/qwidgetfinder.h
   src/scrolltext.cpp
   src/scrolltext.h
   src/serverdata.cpp
@@ -108,7 +112,7 @@ add_executable(SpriteChat
   data.qrc
 )
 
-target_compile_definitions(SpriteChat PUBLIC QT_NO_KEYWORDS)
+target_compile_definitions(SpriteChat PUBLIC QT_NO_KEYWORDS QT_MESSAGELOGCONTEXT)
 target_include_directories(SpriteChat PRIVATE src lib)
 target_link_directories(SpriteChat PRIVATE lib)
 target_link_libraries(SpriteChat PRIVATE Qt${QT_VERSION_MAJOR}::Core Qt${QT_VERSION_MAJOR}::Gui Qt${QT_VERSION_MAJOR}::Network Qt${QT_VERSION_MAJOR}::Widgets Qt${QT_VERSION_MAJOR}::Concurrent Qt${QT_VERSION_MAJOR}::WebSockets Qt${QT_VERSION_MAJOR}::UiTools bass bassopus bassmidi)

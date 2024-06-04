@@ -7,14 +7,11 @@
 #include <QPushButton>
 #include <QTimer>
 
-#include <functional>
-
 void call_error(QString p_message)
 {
   QMessageBox *msgBox = new QMessageBox;
-
   msgBox->setAttribute(Qt::WA_DeleteOnClose);
-  msgBox->setText(QCoreApplication::translate("debug_functions", "Error: %1").arg(p_message));
+  msgBox->setText(QCoreApplication::translate("debug_functions", "%1").arg(p_message));
   msgBox->setWindowTitle(QCoreApplication::translate("debug_functions", "Error"));
 
   // msgBox->setWindowModality(Qt::NonModal);
@@ -57,4 +54,15 @@ void call_notice(QString p_message)
   });
 
   msgBox->exec();
+}
+
+void call_message_error(QString message, QtMsgType messageType)
+{
+  QMessageBox *box = new QMessageBox;
+  box->setAttribute(Qt::WA_DeleteOnClose);
+  box->setWindowTitle(messageType == QtCriticalMsg ? "Critical Error" : "Error");
+  box->setIcon(QMessageBox::Critical);
+  box->setText(message);
+  box->setStandardButtons(QMessageBox::Ok);
+  box->exec();
 }

@@ -16,6 +16,7 @@
 #include "aosfxplayer.h"
 #include "aotextarea.h"
 #include "aotextboxwidgets.h"
+#include "characterselect.h"
 #include "chatlogpiece.h"
 #include "datatypes.h"
 #include "debug_functions.h"
@@ -81,8 +82,8 @@ public:
   void clear_music();
   void clear_areas();
 
-  QVector<CharacterSlot> characterList() const { return char_list; }
-  void setCharacterList(const QVector<CharacterSlot> &characterList) { char_list = characterList; }
+  void setCharacterList(const QStringList &characterList);
+  void setTakenCharacterList(const QList<bool> &takenCharacterList);
 
   void fix_last_area();
 
@@ -93,8 +94,6 @@ public:
   void arup_modify(int type, int place, QString value);
 
   void character_loading_finished();
-
-  void set_courtroom_size();
 
   // sets position of widgets based on theme ini files
   void set_widgets();
@@ -332,7 +331,7 @@ private:
   // 0 = in front, 1 = behind
   int pair_order = 0;
 
-  QVector<CharacterSlot> char_list;
+  QStringList m_character_list;
   QVector<EvidenceItem> evidence_list;
   QVector<QString> music_list;
   QVector<QString> area_list;
@@ -471,10 +470,10 @@ private:
   // ticking done
   int text_state = 2;
 
-  // character id, which index of the char_list the player is
-  int m_cid = -1;
+  // character id, which index of the character list the player is
+  int m_character_id = -1;
   // cid and this may differ in cases of ini-editing
-  QString current_char;
+  QString m_target_character;
 
   int objection_state = 0;
   QString objection_custom;
@@ -755,36 +754,10 @@ private:
   QPlainTextEdit *ui_evidence_description;
 
   AOImage *ui_char_select_background;
+  kal::CharacterSelect *ui_char_select = nullptr;
 
-  // pretty list of characters
-  QTreeWidget *ui_char_list;
-
-  // abstract widget to hold char buttons
-  QWidget *ui_char_buttons;
-
-  QVector<AOCharButton *> ui_char_button_list;
-  QVector<AOCharButton *> ui_char_button_list_filtered;
-
-  AOButton *ui_back_to_lobby;
-
-  QLineEdit *ui_char_password;
-
-  AOButton *ui_char_select_left;
-  AOButton *ui_char_select_right;
-
-  AOButton *ui_spectator;
-
-  QLineEdit *ui_char_search;
-  QCheckBox *ui_char_passworded;
-  QCheckBox *ui_char_taken;
-
-  void construct_char_select();
-  void set_char_select();
-  void set_char_select_page();
-  void char_clicked(int n_char);
-  void on_char_button_context_menu_requested(const QPoint &pos);
-  void put_button_in_place(int starting, int chars_on_this_page);
-  void filter_character_list();
+  void constructCharacterSelect();
+  void requestCharacter(int n_char);
 
   void initialize_emotes();
   void refresh_emotes();
@@ -955,16 +928,9 @@ private Q_SLOTS:
   void evidence_load(QString filename);
   bool compare_evidence_changed(EvidenceItem evi_a, EvidenceItem evi_b);
 
-  void on_back_to_lobby_clicked();
+  void exitServer();
 
-  void on_char_list_double_clicked(QTreeWidgetItem *p_item, int column);
-  void on_char_select_left_clicked();
-  void on_char_select_right_clicked();
-  void on_char_search_changed();
-  void on_char_taken_clicked();
-  void on_char_passworded_clicked();
-
-  void on_spectator_clicked();
+  void requestSpectatorAsCharacter();
 
   void on_switch_area_music_clicked();
 

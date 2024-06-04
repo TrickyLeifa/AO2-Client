@@ -89,9 +89,6 @@ public:
   // client ID. Not useful, to be removed eventually
   int client_id = 0;
 
-  /// Used for a fancy loading bar upon joining a server.
-  int generated_chars = 0;
-
   bool courtroom_loaded = false;
 
   /**
@@ -276,15 +273,6 @@ public:
 
   // Returns if the sfx is defined as looping in char.ini
   QString get_sfx_looping(QString p_char, int p_emote);
-
-  // Returns if an emote has a frame specific SFX for it
-  QString get_sfx_frame(QString p_char, QString p_emote, int n_frame);
-
-  // Returns if an emote has a frame specific SFX for it
-  QString get_flash_frame(QString p_char, QString p_emote, int n_frame);
-
-  // Returns if an emote has a frame specific SFX for it
-  QString get_screenshake_frame(QString p_char, QString p_emote, int n_frame);
 
   // Not in use
   int get_sfx_delay(QString p_char, int p_emote);

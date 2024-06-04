@@ -115,8 +115,6 @@ void AOApplication::server_packet_received(AOPacket packet)
       return;
     }
 
-    generated_chars = 0;
-
     destruct_courtroom();
     construct_courtroom();
 
@@ -190,12 +188,12 @@ void AOApplication::server_packet_received(AOPacket packet)
       return;
     }
 
-    QVector<CharacterSlot> slots = w_courtroom->characterList();
-    for (int i = 0; i < slots.size(); i++)
+    QList<bool> taken_character_list;
+    for (int i = 0; i < content.size(); ++i)
     {
-      slots[i].is_taken = content.at(i) == "-1";
+      taken_character_list.append(content[i] == "-1");
     }
-    w_courtroom->setCharacterList(slots);
+    w_courtroom->setTakenCharacterList(taken_character_list);
 
     log_to_demo = false;
   }
@@ -207,22 +205,16 @@ void AOApplication::server_packet_received(AOPacket packet)
       return;
     }
 
-    QVector<CharacterSlot> slots;
+    QStringList character_list;
     for (const QString &i_character_data : qAsConst(content))
     {
-      CharacterSlot slot;
-      slot.name = i_character_data.split("&").at(0);
-      slots.append(slot);
+      character_list.append(i_character_data.split("&").at(0));
     }
-    w_courtroom->setCharacterList(slots);
+    w_courtroom->setCharacterList(character_list);
 
     if (!courtroom_loaded)
     {
       send_server_packet(AOPacket("RM"));
-    }
-    else
-    {
-      w_courtroom->character_loading_finished();
     }
   }
   else if (header == "SM")
@@ -309,7 +301,6 @@ void AOApplication::server_packet_received(AOPacket packet)
       return;
     }
 
-    w_courtroom->character_loading_finished();
     w_courtroom->done_received();
 
     courtroom_loaded = true;
@@ -363,7 +354,6 @@ void AOApplication::server_packet_received(AOPacket packet)
     }
     // For some reason, args 0 and 1 are not used (from tsu3 they're client ID and a string "CID")
     w_courtroom->enter_courtroom();
-    w_courtroom->set_courtroom_size();
     w_courtroom->update_character(content.at(2).toInt());
   }
   else if (header == "MS")

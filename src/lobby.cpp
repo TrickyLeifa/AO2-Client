@@ -2,8 +2,8 @@
 
 #include "aoapplication.h"
 #include "demoserver.h"
-#include "gui_utils.h"
 #include "networkmanager.h"
+#include "qtutil/qwidgetfinder.h"
 #include "widgets/direct_connect_dialog.h"
 #include "widgets/server_editor_dialog.h"
 
@@ -99,74 +99,76 @@ void Lobby::loadUI()
   this->setWindowIcon(QIcon(":/logo.png"));
   this->setWindowFlags((this->windowFlags() | Qt::CustomizeWindowHint));
 
-  QUiLoader l_loader(this);
-  QFile l_uiFile(Options::getInstance().getUIAsset(DEFAULT_UI));
-  if (!l_uiFile.open(QFile::ReadOnly))
+  QFile file(Options::getInstance().getUIAsset(DEFAULT_UI));
+  if (!file.open(QFile::ReadOnly))
   {
-    qCritical() << "Unable to open file " << l_uiFile.fileName();
+    qFatal("Failed to open file %s: %s", qPrintable(file.fileName()), qPrintable(file.errorString()));
     return;
   }
 
-  l_loader.load(&l_uiFile, this);
+  QUiLoader loader(this);
+  loader.load(&file, this);
 
-  FROM_UI(QLabel, game_version_lbl);
+  qtutil::QWidgetFinder finder(this);
+
+  finder.findChild(ui_game_version_lbl, "game_version_lbl");
   ui_game_version_lbl->setText(tr("Version: %1").arg(ao_app->get_version_string()));
 
-  FROM_UI(QPushButton, settings_button);
+  finder.findChild(ui_settings_button, "settings_button");
   connect(ui_settings_button, &QPushButton::clicked, this, &Lobby::onSettingsRequested);
 
-  FROM_UI(QPushButton, about_button);
+  finder.findChild(ui_about_button, "about_button");
   connect(ui_about_button, &QPushButton::clicked, this, &Lobby::on_about_clicked);
 
   // Serverlist elements
-  FROM_UI(QTabWidget, connections_tabview);
+  finder.findChild(ui_connections_tabview, "connections_tabview");
   ui_connections_tabview->tabBar()->setExpanding(true);
   connect(ui_connections_tabview, &QTabWidget::currentChanged, this, &Lobby::on_tab_changed);
 
-  FROM_UI(QTreeWidget, serverlist_tree);
-  FROM_UI(QLineEdit, serverlist_search);
+  finder.findChild(ui_serverlist_tree, "serverlist_tree");
+  finder.findChild(ui_serverlist_search, "serverlist_search");
   connect(ui_serverlist_tree, &QTreeWidget::itemClicked, this, &Lobby::on_server_list_clicked);
   connect(ui_serverlist_tree, &QTreeWidget::itemDoubleClicked, this, &Lobby::on_list_doubleclicked);
   connect(ui_serverlist_search, &QLineEdit::textChanged, this, &Lobby::on_server_search_edited);
 
-  FROM_UI(QTreeWidget, favorites_tree);
+  finder.findChild(ui_favorites_tree, "favorites_tree");
   connect(ui_favorites_tree, &QTreeWidget::itemClicked, this, &Lobby::on_favorite_tree_clicked);
   connect(ui_favorites_tree, &QTreeWidget::itemDoubleClicked, this, &Lobby::on_list_doubleclicked);
 
-  FROM_UI(QTreeWidget, demo_tree);
+  finder.findChild(ui_demo_tree, "demo_tree");
   connect(ui_demo_tree, &QTreeWidget::itemClicked, this, &Lobby::on_demo_clicked);
   connect(ui_demo_tree, &QTreeWidget::itemDoubleClicked, this, &Lobby::on_list_doubleclicked);
 
-  FROM_UI(QPushButton, refresh_button);
+  finder.findChild(ui_refresh_button, "refresh_button");
   connect(ui_refresh_button, &QPushButton::released, this, &Lobby::on_refresh_released);
 
-  FROM_UI(QPushButton, direct_connect_button);
+  finder.findChild(ui_direct_connect_button, "direct_connect_button");
   connect(ui_direct_connect_button, &QPushButton::released, this, &Lobby::on_direct_connect_released);
 
-  FROM_UI(QPushButton, add_to_favorite_button);
+  finder.findChild(ui_add_to_favorite_button, "add_to_favorite_button");
   connect(ui_add_to_favorite_button, &QPushButton::released, this, &Lobby::on_add_to_fav_released);
 
-  FROM_UI(QPushButton, add_server_button);
+  finder.findChild(ui_add_server_button, "add_server_button");
   ui_add_server_button->setVisible(false);
   connect(ui_add_server_button, &QPushButton::released, this, &Lobby::on_add_server_to_fave_released);
 
-  FROM_UI(QPushButton, edit_favorite_button);
+  finder.findChild(ui_edit_favorite_button, "edit_favorite_button");
   ui_edit_favorite_button->setVisible(false);
   connect(ui_edit_favorite_button, &QPushButton::released, this, &Lobby::on_edit_favorite_released);
 
-  FROM_UI(QPushButton, remove_from_favorites_button);
+  finder.findChild(ui_remove_from_favorites_button, "remove_from_favorites_button");
   ui_remove_from_favorites_button->setVisible(false);
   connect(ui_remove_from_favorites_button, &QPushButton::released, this, &Lobby::on_remove_from_fav_released);
 
-  FROM_UI(QLabel, server_player_count_lbl);
-  FROM_UI(QTextBrowser, server_description_text);
-  FROM_UI(QPushButton, connect_button);
+  finder.findChild(ui_server_player_count_lbl, "server_player_count_lbl");
+  finder.findChild(ui_server_description_text, "server_description_text");
+  finder.findChild(ui_connect_button, "connect_button");
   connect(ui_connect_button, &QPushButton::released, net_manager, &NetworkManager::join_to_server);
   connect(ui_connect_button, &QPushButton::released, this, [=] { ui_server_player_count_lbl->setText(tr("Joining Server...")); });
   connect(net_manager, &NetworkManager::server_connected, ui_connect_button, &QPushButton::setEnabled);
 
-  FROM_UI(QTextBrowser, motd_text);
-  FROM_UI(QTextBrowser, game_changelog_text);
+  finder.findChild(ui_motd_text, "motd_text");
+  finder.findChild(ui_game_changelog_text, "game_changelog_text");
   if (ui_game_changelog_text != nullptr)
   {
     QString l_changelog_text = "No changelog found.";

@@ -13,7 +13,16 @@ static QtMessageHandler original_message_handler;
 static AOApplication *message_handler_context;
 void message_handler(QtMsgType type, const QMessageLogContext &context, const QString &msg)
 {
+#ifndef QT_DEBUG
+  if (type == QtCriticalMsg || type == QtFatalMsg)
+  {
+    QString message = QString("A critical error occurred!\n\nDetails: %1\n\nFile: %2\nFunction: %3\nLine: %4\n\n").arg(msg).arg(context.file).arg(context.function).arg(context.line);
+    call_message_error(message, type);
+  }
+#endif
+
   Q_EMIT message_handler_context->qt_log_message(type, context, msg);
+
   original_message_handler(type, context, msg);
 }
 

@@ -1,8 +1,8 @@
 #include "server_editor_dialog.h"
 
 #include "datatypes.h"
-#include "gui_utils.h"
 #include "options.h"
+#include "qtutil/qwidgetfinder.h"
 
 #include <QDebug>
 #include <QFile>
@@ -14,28 +14,29 @@ const QString ServerEditorDialog::UI_FILE_PATH = "favorite_server_dialog.ui";
 ServerEditorDialog::ServerEditorDialog(QWidget *parent)
     : QDialog(parent)
 {
-  QUiLoader loader(this);
   QFile file(Options::getInstance().getUIAsset(UI_FILE_PATH));
-
   if (!file.open(QFile::ReadOnly))
   {
-    qFatal("Unable to open file %s", qPrintable(file.fileName()));
+    qFatal("Failed to open file %s: %s", qPrintable(file.fileName()), qPrintable(file.errorString()));
     return;
   }
+
+  QUiLoader loader(this);
   ui_body = loader.load(&file, this);
 
   auto layout = new QVBoxLayout(this);
   layout->addWidget(ui_body);
 
-  FROM_UI(QLineEdit, name);
-  FROM_UI(QLineEdit, hostname);
-  FROM_UI(QSpinBox, port);
-  FROM_UI(QComboBox, protocol);
-  FROM_UI(QPlainTextEdit, description);
-  FROM_UI(QDialogButtonBox, button_box);
+  qtutil::QWidgetFinder finder(ui_body);
 
-  FROM_UI(QLineEdit, legacy_edit);
-  FROM_UI(QPushButton, parse_legacy);
+  finder.findChild(ui_name, "name");
+  finder.findChild(ui_hostname, "hostname");
+  finder.findChild(ui_port, "port");
+  finder.findChild(ui_protocol, "protocol");
+  finder.findChild(ui_description, "description");
+  finder.findChild(ui_button_box, "button_box");
+  finder.findChild(ui_legacy_edit, "legacy_edit");
+  finder.findChild(ui_parse_legacy, "parse_legacy");
 
   connect(ui_parse_legacy, &QPushButton::released, this, &ServerEditorDialog::parseLegacyEntry);
 

@@ -131,10 +131,14 @@ public:
   void set_background(QString p_background, bool display = false);
 
   // sets the local character pos/side to use.
+  QString default_side();
+  QString current_side();
   void set_side(QString p_side);
+  void reset_side();
 
   // sets the pos dropdown
   void set_pos_dropdown(QStringList pos_dropdowns);
+  void update_pos_dropdown();
 
   // sets the evidence list member variable to argument
   void set_evidence_list(QVector<EvidenceItem> &p_evi_list);
@@ -267,9 +271,6 @@ public:
   // state is an number between 0 and 10 inclusive
   void set_hp_bar(int p_bar, int p_state);
 
-  // Toggles the judge buttons, whether they should appear or not.
-  void show_judge_controls(bool visible);
-
   void start_clock(int id, qint64 msecs);
   void set_clock(int id, qint64 msecs);
   void pause_clock(int id);
@@ -292,7 +293,7 @@ public:
 
   JudgeState get_judge_state();
   void set_judge_state(JudgeState new_state);
-  void set_judge_buttons();
+  void show_judge_controls();
 
 private:
   AOApplication *ao_app;
@@ -575,7 +576,6 @@ private:
   bool server_ooc = true;
 
   QString current_background = "default";
-  QString current_side;
 
   // used for courtroom slide logic
   QString last_side = "";
@@ -845,8 +845,7 @@ private Q_SLOTS:
   void on_emote_right_clicked();
 
   void on_emote_dropdown_changed(int p_index);
-  void on_pos_dropdown_changed(int p_index);
-  void on_pos_dropdown_changed(QString p_text);
+  void on_pos_dropdown_changed(QString p_side);
   void on_pos_dropdown_context_menu_requested(const QPoint &pos);
   void on_pos_remove_clicked();
 

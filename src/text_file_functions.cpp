@@ -430,7 +430,7 @@ QStringList AOApplication::read_ini_tags(VPath p_path, QString target_tag)
     settings.beginGroup(target_tag);
   }
   QStringList keys = settings.allKeys();
-  foreach (QString key, keys)
+  for (QString key : keys)
   {
     QString value = settings.value(key).value<QString>();
     r_values << key + "=" + value;

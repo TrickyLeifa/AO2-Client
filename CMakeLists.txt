@@ -146,7 +146,7 @@ set_target_properties(spritechat PROPERTIES RUNTIME_OUTPUT_DIRECTORY $<1:${KAL_B
 if(WIN32)
   if(CMAKE_BUILD_TYPE STREQUAL "Release")
     set_property(TARGET spritechat PROPERTY WIN32_EXECUTABLE true)
-    set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/data/logo-client.rc")
+    set(APP_ICON_RESOURCE_WINDOWS "${CMAKE_CURRENT_SOURCE_DIR}/resource/logo-client.rc")
     target_sources(spritechat PRIVATE ${APP_ICON_RESOURCE_WINDOWS})
   endif()
 endif()

@@ -69,8 +69,8 @@ int main(int argc, char *argv[])
   main_app.installTranslator(&qtTranslator);
 
   QTranslator appTranslator;
-  qDebug() << ":/data/translations/ao_" + p_language;
-  appTranslator.load("ao_" + p_language, ":/data/translations/");
+  qDebug() << ":/resource/translations/ao_" + p_language;
+  appTranslator.load("ao_" + p_language, ":/resource/translations/");
   main_app.installTranslator(&appTranslator);
 
   main_app.construct_lobby();

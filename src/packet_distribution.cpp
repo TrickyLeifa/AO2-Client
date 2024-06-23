@@ -656,14 +656,6 @@ void AOApplication::server_packet_received(AOPacket packet)
       return; // ignore malformed packet
     }
     w_courtroom->set_judge_state(state);
-    if (w_courtroom->get_judge_state() != Courtroom::POS_DEPENDENT)
-    { // If we receive JD -1, it means the server asks us to fall back to client-side judge buttons behavior
-      w_courtroom->show_judge_controls(w_courtroom->get_judge_state() == Courtroom::SHOW_CONTROLS);
-    }
-    else
-    {
-      w_courtroom->set_judge_buttons(); // client-side judge behavior
-    }
   }
 
   // AssetURL Packet

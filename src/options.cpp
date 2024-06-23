@@ -672,7 +672,6 @@ QVector<ServerInfo> Options::favorites()
     f_server.port = favorite.value("port", 27016).toInt();
     f_server.name = favorite.value("name", "Missing Name").toString();
     f_server.description = favorite.value("desc", "No description").toString();
-    f_server.socket_type = SERVER_CONNECTION_TYPE_STRING_MAP.value(favorite.value("protocol", "tcp").toString());
     serverlist.append(std::move(f_server));
     favorite.endGroup();
   }
@@ -691,15 +690,6 @@ void Options::setFavorites(QVector<ServerInfo> value)
     favorite.setValue("address", fav_server.ip);
     favorite.setValue("port", fav_server.port);
     favorite.setValue("desc", fav_server.description);
-
-    if (fav_server.socket_type == TcpServerConnection)
-    {
-      favorite.setValue("protocol", "tcp");
-    }
-    else
-    {
-      favorite.setValue("protocol", "ws");
-    }
     favorite.endGroup();
   }
   favorite.sync();
@@ -720,14 +710,6 @@ void Options::addFavorite(ServerInfo server)
   favorite.setValue("address", server.ip);
   favorite.setValue("port", server.port);
   favorite.setValue("desc", server.description);
-  if (server.socket_type == TcpServerConnection)
-  {
-    favorite.setValue("protocol", "tcp");
-  }
-  else
-  {
-    favorite.setValue("protocol", "ws");
-  }
   favorite.endGroup();
   favorite.sync();
 }
@@ -739,14 +721,6 @@ void Options::updateFavorite(ServerInfo server, int index)
   favorite.setValue("address", server.ip);
   favorite.setValue("port", server.port);
   favorite.setValue("desc", server.description);
-  if (server.socket_type == TcpServerConnection)
-  {
-    favorite.setValue("protocol", "tcp");
-  }
-  else
-  {
-    favorite.setValue("protocol", "ws");
-  }
   favorite.endGroup();
   favorite.sync();
 }

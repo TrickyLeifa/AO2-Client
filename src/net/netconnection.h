@@ -3,7 +3,7 @@
 #include "aopacket.h"
 #include "datatypes.h"
 
-#include <QObject>
+#include <QWebSocket>
 
 class NetConnection : public QObject
 {
@@ -11,13 +11,14 @@ class NetConnection : public QObject
 
 public:
   explicit NetConnection(QObject *parent = nullptr);
+  virtual ~NetConnection();
 
-  virtual bool isConnected() = 0;
+  bool isConnected();
 
-  virtual void connectToServer(ServerInfo &server) = 0;
-  virtual void disconnectFromServer() = 0;
+  void connectToServer(ServerInfo &server);
+  void disconnectFromServer();
 
-  virtual void sendPacket(AOPacket packet) = 0;
+  void sendPacket(AOPacket packet);
 
 Q_SIGNALS:
   void connectedToServer();
@@ -25,4 +26,13 @@ Q_SIGNALS:
   void errorOccurred(QString error);
 
   void receivedPacket(AOPacket packet);
+
+private:
+  QWebSocket *m_socket;
+  QAbstractSocket::SocketState m_last_state;
+
+private Q_SLOTS:
+  void onError();
+  void onStateChanged(QAbstractSocket::SocketState state);
+  void onTextMessageReceived(QString message);
 };

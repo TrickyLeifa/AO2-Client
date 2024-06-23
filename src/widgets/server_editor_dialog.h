@@ -2,7 +2,6 @@
 
 #include "datatypes.h"
 
-#include <QComboBox>
 #include <QDialog>
 #include <QDialogButtonBox>
 #include <QLabel>
@@ -31,7 +30,6 @@ private:
   QLineEdit *ui_name;
   QLineEdit *ui_hostname;
   QSpinBox *ui_port;
-  QComboBox *ui_protocol;
   QPlainTextEdit *ui_description;
   QDialogButtonBox *ui_button_box;
 

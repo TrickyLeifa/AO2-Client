@@ -3,8 +3,6 @@
 #include "datatypes.h"
 #include "debug_functions.h"
 #include "lobby.h"
-#include "net/nettcpconnection.h"
-#include "net/netwebsocketconnection.h"
 #include "options.h"
 
 #include <QAbstractSocket>
@@ -62,16 +60,7 @@ void NetworkManager::ms_request_finished(QNetworkReply *reply)
     server.ip = entry["ip"].toString();
     server.name = entry["name"].toString();
     server.description = entry["description"].toString(tr("No description provided."));
-    if (entry["ws_port"].isDouble())
-    {
-      server.socket_type = WebSocketServerConnection;
-      server.port = entry["ws_port"].toInt();
-    }
-    else
-    {
-      server.socket_type = TcpServerConnection;
-      server.port = entry["port"].toInt();
-    }
+    server.port = entry["port"].toInt();
     if (server.port != 0)
     {
       server_list.append(server);
@@ -148,24 +137,7 @@ void NetworkManager::connect_to_server(ServerInfo server)
 {
   disconnect_from_server();
 
-  qInfo().noquote() << QObject::tr("Connecting to %1").arg(server.toString());
-  switch (server.socket_type)
-  {
-  default:
-    server.socket_type = TcpServerConnection;
-    [[fallthrough]];
-
-  case TcpServerConnection:
-    qInfo() << "Using TCP backend.";
-    m_connection = new NetTcpConnection(this);
-    break;
-
-  case WebSocketServerConnection:
-    qInfo() << "Using WebSockets backend.";
-    m_connection = new NetWebSocketConnection(this);
-    break;
-  }
-
+  m_connection = new NetConnection(this);
   connect(m_connection, &NetConnection::connectedToServer, this, [] { qInfo() << "Established connection to server."; });
   connect(m_connection, &NetConnection::disconnectedFromServer, ao_app, &AOApplication::server_disconnected);
   connect(m_connection, &NetConnection::errorOccurred, this, [](QString error) { qCritical() << "Connection error:" << error; });

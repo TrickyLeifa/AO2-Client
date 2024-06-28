@@ -50,17 +50,19 @@ void DirectConnectDialog::onConnectPressed()
   QString l_hostname = ui_direct_hostname_edit->text();
   if (!SCHEME_PATTERN.match(l_hostname).hasMatch())
   {
-    l_hostname = "tcp://" % l_hostname;
+    l_hostname = "ws://" % l_hostname;
   }
+
   QUrl l_url(l_hostname);
   if (!l_url.isValid())
   {
     call_error(tr("Invalid URL."));
     return;
   }
-  if (!SERVER_CONNECTION_TYPE_STRING_MAP.contains(l_url.scheme()))
+
+  if (l_url.scheme() != "ws")
   {
-    call_error(tr("Scheme not recognized. Must be either of the following: ") % QStringList::fromVector(SERVER_CONNECTION_TYPE_STRING_MAP.keys().toVector()).join(", "));
+    call_error(tr("Scheme not recognized. Must be ws://"));
     return;
   }
   if (l_url.port() == -1)
@@ -69,7 +71,6 @@ void DirectConnectDialog::onConnectPressed()
     return;
   }
   ServerInfo l_server;
-  l_server.socket_type = SERVER_CONNECTION_TYPE_STRING_MAP[l_url.scheme()];
   l_server.ip = l_url.host();
   l_server.port = l_url.port();
   l_server.name = "Direct Connection";

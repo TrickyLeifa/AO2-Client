@@ -107,12 +107,12 @@ QHeaderView::section:pressed {
 
 QHeaderView::up-arrow
 {
-    image: url(&quot;:/data/ui/lobby_assets/up-arrow.png&quot;);
+    image: url(&quot;:/resource/ui/lobby_assets/up-arrow.png&quot;);
 }
 
 QHeaderView::down-arrow
 {
-    image: url(&quot;:/data/ui/lobby_assets/down-arrow.png&quot;);
+    image: url(&quot;:/resource/ui/lobby_assets/down-arrow.png&quot;);
 }
 
 QScrollBar:vertical {

@@ -94,10 +94,6 @@ add_executable(spritechat
   src/main.cpp
   src/net/netconnection.cpp
   src/net/netconnection.h
-  src/net/nettcpconnection.cpp
-  src/net/nettcpconnection.h
-  src/net/netwebsocketconnection.cpp
-  src/net/netwebsocketconnection.h
   src/networkmanager.cpp
   src/networkmanager.h
   src/options.cpp

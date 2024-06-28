@@ -48,13 +48,13 @@ inline uint qHash(const VPath &key, uint seed = qGlobalQHashSeed())
   return qHash(key.toQString(), seed);
 }
 
-class AOApplication : public QApplication
+class AOApplication : public QObject
 {
   Q_OBJECT
 
 public:
-  AOApplication(int &argc, char **argv);
-  ~AOApplication();
+  explicit AOApplication(const QStringList &imageFormatList, QObject *parent = nullptr);
+  virtual ~AOApplication();
 
   NetworkManager *net_manager;
   Lobby *w_lobby = nullptr;
@@ -76,6 +76,8 @@ public:
   void send_server_packet(AOPacket p_packet);
 
   void call_settings_menu();
+
+  QStringList imageFormatList() const;
 
   qint64 latency = 0;
   QString window_title;
@@ -338,6 +340,8 @@ private:
   QHash<uint, QString> asset_lookup_cache;
   QHash<uint, QString> dir_listing_cache;
   QSet<uint> dir_listing_exist_cache;
+
+  QStringList m_image_format_list;
 
 public Q_SLOTS:
   void server_disconnected();

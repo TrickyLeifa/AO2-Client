@@ -1182,7 +1182,7 @@ void Courtroom::set_fonts(QString p_char)
   QFont new_font = ao_app->default_font;
   int new_font_size = new_font.pointSize() * Options::getInstance().themeScalingFactor();
   new_font.setPointSize(new_font_size);
-  ao_app->setFont(new_font);
+  qApp->setFont(new_font);
 
   set_font(ui_vp_showname, "", "showname", p_char);
   set_font(ui_vp_message, "", "message", p_char);
@@ -1613,11 +1613,13 @@ void Courtroom::update_character(int p_cid, QString char_name, bool reset_emote)
     {
       ui_custom_objection->show();
       QDir directory(custom_objection_dir);
-      QStringList custom_obj = directory.entryList(QStringList() << "*.png"
-                                                                 << "*.gif"
-                                                                 << "*.apng"
-                                                                 << "*.webp",
-                                                   QDir::Files);
+
+      QStringList format_list;
+      for (const QString &i_format : ao_app->imageFormatList())
+      {
+        format_list.append("*." + i_format);
+      }
+      QStringList custom_obj = directory.entryList(format_list, QDir::Files);
       for (const QString &filename : custom_obj)
       {
         CustomObjection custom_objection;
@@ -3394,7 +3396,7 @@ void Courtroom::handle_callwords()
       // Play the call word sfx on the modcall_player sound container
       modcall_player->findAndPlaySfx(ao_app->get_court_sfx("word_call"));
       // Make the window flash
-      ao_app->alert(this);
+      qApp->alert(this);
       // Break the loop so we don't spam sound effects
       break;
     }
@@ -4891,7 +4893,7 @@ void Courtroom::mod_called(QString p_ip)
   if (!ui_guard->isChecked())
   {
     modcall_player->findAndPlaySfx(ao_app->get_court_sfx("mod_call"));
-    ao_app->alert(this);
+    qApp->alert(this);
   }
 }
 
@@ -6581,7 +6583,7 @@ void Courtroom::truncate_label_text(QWidget *p_widget, QString p_identifier)
     return;
   }
 
-  int checkbox_width = AOApplication::style()->pixelMetric(QStyle::PM_IndicatorWidth) + AOApplication::style()->pixelMetric(QStyle::PM_CheckBoxLabelSpacing);
+  int checkbox_width = QApplication::style()->pixelMetric(QStyle::PM_IndicatorWidth) + QApplication::style()->pixelMetric(QStyle::PM_CheckBoxLabelSpacing);
 
   int label_theme_width = (p_label != nullptr ? design_ini_result.width : (design_ini_result.width - checkbox_width));
   int label_px_width = p_widget->fontMetrics().boundingRect(label_text_tr).width(); // pixel width of our translated text

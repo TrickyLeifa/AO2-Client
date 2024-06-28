@@ -19,7 +19,7 @@ int main(int argc, char *argv[])
 
   qRegisterMetaType<AOPacket>();
 
-  AOApplication main_app(argc, argv);
+  QApplication app(argc, argv);
 
 #ifdef ANDROID
   if (QtAndroid::checkPermission("android.permission.READ_EXTERNAL_STORAGE") == QtAndroid::PermissionResult::Denied)
@@ -28,34 +28,44 @@ int main(int argc, char *argv[])
   }
 #endif
 
-  AOApplication::addLibraryPath(AOApplication::applicationDirPath() + "/lib");
+  QApplication::addLibraryPath(QApplication::applicationDirPath() + "/lib");
+
+  QStringList formats;
+  {
+    QStringList expected_formats{"WEBP", "APNG", "GIF"};
+    for (const QByteArray &i_format : QImageReader::supportedImageFormats())
+    {
+      if (expected_formats.contains(i_format))
+      {
+        expected_formats.removeAll(i_format.toLower());
+        formats.append(QString(".%1").arg(i_format.toLower()));
+      }
+    }
+
+    if (!expected_formats.isEmpty())
+    {
+      call_error("Missing image formats: " + expected_formats.join(", ") + ".<br /><br /> Please make sure you have installed the application properly.");
+    }
+  }
+  AOApplication main_app(formats);
+
+  QApplication::setApplicationVersion(main_app.get_version_string());
+  QApplication::setApplicationDisplayName(QObject::tr("Attorney Online %1").arg(QApplication::applicationVersion()));
+
   QResource::registerResource(main_app.get_asset("themes/" + Options::getInstance().theme() + ".rcc"));
 
-  QFont main_font = main_app.font();
+  QFont main_font = app.font();
   main_app.default_font = main_font;
 
   QFont new_font = main_font;
   int new_font_size = main_app.default_font.pointSize() * Options::getInstance().themeScalingFactor();
   new_font.setPointSize(new_font_size);
-  main_app.setFont(new_font);
+  app.setFont(new_font);
 
-  QFontDatabase fontDatabase;
   QDirIterator it(get_base_path() + "fonts", QDirIterator::Subdirectories);
   while (it.hasNext())
   {
-    fontDatabase.addApplicationFont(it.next());
-  }
-
-  QPluginLoader apngPlugin("qapng");
-  if (!apngPlugin.load())
-  {
-    qCritical() << "QApng plugin could not be loaded";
-  }
-
-  QPluginLoader webpPlugin("qwebp");
-  if (!webpPlugin.load())
-  {
-    qCritical() << "QWebp plugin could not be loaded";
+    QFontDatabase::addApplicationFont(it.next());
   }
 
   QString p_language = Options::getInstance().language();
@@ -66,16 +76,17 @@ int main(int argc, char *argv[])
 
   QTranslator qtTranslator;
   qtTranslator.load("qt_" + p_language, QLibraryInfo::location(QLibraryInfo::TranslationsPath));
-  main_app.installTranslator(&qtTranslator);
+  app.installTranslator(&qtTranslator);
 
   QTranslator appTranslator;
   qDebug() << ":/resource/translations/ao_" + p_language;
   appTranslator.load("ao_" + p_language, ":/resource/translations/");
-  main_app.installTranslator(&appTranslator);
+  app.installTranslator(&appTranslator);
 
   main_app.construct_lobby();
   main_app.net_manager->get_server_list();
   main_app.net_manager->send_heartbeat();
   main_app.w_lobby->show();
-  return main_app.exec();
+
+  return app.exec();
 }

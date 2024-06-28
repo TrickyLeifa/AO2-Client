@@ -133,7 +133,7 @@ bool AOApplication::append_to_file(QString p_text, QString p_file, bool make_dir
 
 QMultiMap<QString, QString> AOApplication::load_demo_logs_list() const
 {
-  QString l_log_path = applicationDirPath() + "/logs/";
+  QString l_log_path = qApp->applicationDirPath() + "/logs/";
   QDir l_log_folder(l_log_path);
   l_log_folder.setFilter(QDir::NoDotAndDotDot | QDir::Dirs);
 
@@ -379,10 +379,10 @@ QString AOApplication::get_sfx_suffix(VPath sound_to_check)
 
 QString AOApplication::get_image_suffix(VPath path_to_check, bool static_image)
 {
-  QStringList suffixes{};
+  QStringList suffixes;
   if (!static_image)
   {
-    suffixes.append({".webp", ".apng", ".gif"});
+    suffixes.append(m_image_format_list);
   }
   suffixes.append(".png");
 

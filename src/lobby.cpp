@@ -95,7 +95,7 @@ void Lobby::reset_selection()
 
 void Lobby::loadUI()
 {
-  this->setWindowTitle(tr("Attorney Online %1").arg(ao_app->applicationVersion()));
+  this->setWindowTitle(tr("Attorney Online %1").arg(qApp->applicationVersion()));
   this->setWindowIcon(QIcon(":/logo.png"));
   this->setWindowFlags((this->windowFlags() | Qt::CustomizeWindowHint));
 

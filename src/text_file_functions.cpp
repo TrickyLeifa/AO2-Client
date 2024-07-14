@@ -133,7 +133,7 @@ bool AOApplication::append_to_file(QString p_text, QString p_file, bool make_dir
 
 QMultiMap<QString, QString> AOApplication::load_demo_logs_list() const
 {
-  QString l_log_path = qApp->applicationDirPath() + "/logs/";
+  QString l_log_path = get_app_path() + "/logs/";
   QDir l_log_folder(l_log_path);
   l_log_folder.setFilter(QDir::NoDotAndDotDot | QDir::Dirs);
 
@@ -175,18 +175,22 @@ QString AOApplication::read_design_ini(QString p_identifier, QString p_design_pa
   return "";
 }
 
-Qt::TransformationMode AOApplication::get_scaling(QString p_scaling)
+RESIZE_MODE AOApplication::get_scaling(QString p_scaling)
 {
-  if (p_scaling.isEmpty())
+  RESIZE_MODE mode = Options::getInstance().resizeMode();
+  if (mode == AUTO_RESIZE_MODE)
   {
-    p_scaling = Options::getInstance().defaultScalingMode();
+    if (p_scaling == "smooth")
+    {
+      mode = SMOOTH_RESIZE_MODE;
+    }
+    else if (p_scaling == "pixel" || p_scaling == "fast")
+    {
+      mode = PIXEL_RESIZE_MODE;
+    }
   }
 
-  if (p_scaling == "smooth")
-  {
-    return Qt::SmoothTransformation;
-  }
-  return Qt::FastTransformation;
+  return mode;
 }
 
 QPoint AOApplication::get_button_spacing(QString p_identifier, QString p_file)
@@ -360,7 +364,7 @@ QString AOApplication::get_court_sfx(QString p_identifier, QString p_misc)
 
 QString AOApplication::get_sfx_suffix(VPath sound_to_check)
 {
-  QStringList suffixes = {".opus", ".ogg", ".mp3", ".wav", ".mid", ".midi", ".xm", ".it", ".s3m", ".mod", ".mtm", ".umx"};
+  QStringList suffixes = {".opus", ".ogg", ".mp3", ".wav"};
   // Check if we were provided a direct filepath with a suffix already
   QString path = sound_to_check.toQString();
   // Loop through our suffixes
@@ -536,7 +540,7 @@ QString AOApplication::get_emote_property(QString p_char, QString p_emote, QStri
   return f_result;
 }
 
-Qt::TransformationMode AOApplication::get_misc_scaling(QString p_miscname)
+RESIZE_MODE AOApplication::get_misc_scaling(QString p_miscname)
 {
   if (p_miscname != "")
   {
@@ -545,12 +549,11 @@ Qt::TransformationMode AOApplication::get_misc_scaling(QString p_miscname)
     {
       misc_transform_mode = read_design_ini("scaling", get_misc_path(p_miscname, "config.ini"));
     }
-    if (misc_transform_mode == "smooth")
-    {
-      return Qt::SmoothTransformation;
-    }
+
+    return get_scaling(misc_transform_mode);
   }
-  return Qt::FastTransformation;
+
+  return AUTO_RESIZE_MODE;
 }
 
 QString AOApplication::get_category(QString p_char)

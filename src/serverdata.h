@@ -1,5 +1,4 @@
-#ifndef SERVERDATA_H
-#define SERVERDATA_H
+#pragma once
 
 #include <QObject>
 #include <QString>
@@ -153,4 +152,3 @@ private:
 };
 } // namespace server
 
-#endif // SERVERDATA_H

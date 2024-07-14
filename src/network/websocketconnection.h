@@ -1,21 +1,24 @@
 #pragma once
 
 #include "aopacket.h"
-#include "datatypes.h"
+#include "serverinfo.h"
 
+#include <QObject>
 #include <QWebSocket>
 
-class NetConnection : public QObject
+class AOApplication;
+
+class WebSocketConnection : public QObject
 {
   Q_OBJECT
 
 public:
-  explicit NetConnection(QObject *parent = nullptr);
-  virtual ~NetConnection();
+  explicit WebSocketConnection(AOApplication *ao_app, QObject *parent = nullptr);
+  virtual ~WebSocketConnection();
 
   bool isConnected();
 
-  void connectToServer(ServerInfo &server);
+  void connectToServer(const ServerInfo &server);
   void disconnectFromServer();
 
   void sendPacket(AOPacket packet);
@@ -28,6 +31,8 @@ Q_SIGNALS:
   void receivedPacket(AOPacket packet);
 
 private:
+  AOApplication *ao_app;
+
   QWebSocket *m_socket;
   QAbstractSocket::SocketState m_last_state;
 

@@ -57,10 +57,19 @@ void NetworkManager::ms_request_finished(QNetworkReply *reply)
   {
     const auto entry = entryRef.toObject();
     ServerInfo server;
-    server.ip = entry["ip"].toString();
+    server.address = entry["ip"].toString();
     server.name = entry["name"].toString();
     server.description = entry["description"].toString(tr("No description provided."));
-    server.port = entry["port"].toInt();
+    if (entry.contains("ws_port"))
+    {
+      server.port = entry["ws_port"].toInt();
+    }
+    else
+    {
+      server.port = entry["port"].toInt();
+      server.legacy = true;
+    }
+
     if (server.port != 0)
     {
       server_list.append(server);
@@ -137,11 +146,13 @@ void NetworkManager::connect_to_server(ServerInfo server)
 {
   disconnect_from_server();
 
-  m_connection = new NetConnection(this);
-  connect(m_connection, &NetConnection::connectedToServer, this, [] { qInfo() << "Established connection to server."; });
-  connect(m_connection, &NetConnection::disconnectedFromServer, ao_app, &AOApplication::server_disconnected);
-  connect(m_connection, &NetConnection::errorOccurred, this, [](QString error) { qCritical() << "Connection error:" << error; });
-  connect(m_connection, &NetConnection::receivedPacket, this, &NetworkManager::handle_server_packet);
+  qInfo().noquote() << QObject::tr("Connecting to %1").arg(server.toString());
+  m_connection = new WebSocketConnection(ao_app, this);
+
+  connect(m_connection, &WebSocketConnection::connectedToServer, ao_app, &AOApplication::server_connected);
+  connect(m_connection, &WebSocketConnection::disconnectedFromServer, ao_app, &AOApplication::server_disconnected);
+  connect(m_connection, &WebSocketConnection::errorOccurred, this, [](QString error) { qCritical() << "Connection error:" << error; });
+  connect(m_connection, &WebSocketConnection::receivedPacket, this, &NetworkManager::handle_server_packet);
 
   m_connection->connectToServer(server);
 }
@@ -177,7 +188,7 @@ void NetworkManager::ship_server_packet(AOPacket packet)
 
 void NetworkManager::join_to_server()
 {
-  ship_server_packet(AOPacket("askchaa").toString());
+  ship_server_packet(AOPacket("askchaa"));
 }
 
 void NetworkManager::handle_server_packet(AOPacket packet)

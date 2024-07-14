@@ -62,16 +62,17 @@ void DirectConnectDialog::onConnectPressed()
 
   if (l_url.scheme() != "ws")
   {
-    call_error(tr("Scheme not recognized. Must be ws://"));
+    call_error(tr("Invalid URL scheme. Only ws:// is supported."));
     return;
   }
+
   if (l_url.port() == -1)
   {
     call_error(tr("Invalid server port."));
     return;
   }
   ServerInfo l_server;
-  l_server.ip = l_url.host();
+  l_server.address = l_url.host();
   l_server.port = l_url.port();
   l_server.name = "Direct Connection";
 

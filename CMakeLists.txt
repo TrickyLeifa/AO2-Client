@@ -92,8 +92,8 @@ add_executable(spritechat
   src/lobby.cpp
   src/lobby.h
   src/main.cpp
-  src/net/netconnection.cpp
-  src/net/netconnection.h
+  src/network/websocketconnection.cpp
+  src/network/websocketconnection.h
   src/networkmanager.cpp
   src/networkmanager.h
   src/options.cpp
@@ -111,7 +111,11 @@ add_executable(spritechat
   src/widgets/direct_connect_dialog.h
   src/widgets/server_editor_dialog.cpp
   src/widgets/server_editor_dialog.h
+  src/widgets/playerlistwidget.h src/widgets/playerlistwidget.cpp
+  src/widgets/moderator_dialog.h src/widgets/moderator_dialog.cpp
   src/screenslidetimer.h src/screenslidetimer.cpp
+  src/moderation_functions.h src/moderation_functions.cpp
+  src/network/serverinfo.h src/network/serverinfo.cpp
   src/main.cpp
 )
 
@@ -128,7 +132,6 @@ target_link_libraries(spritechat PUBLIC
   Qt${QT_VERSION_MAJOR}::UiTools
   bass
   bassopus
-  bassmidi
 )
 
 if(KAL_CLIENT_ENABLE_DISCORD_RPC)

@@ -1,47 +1,48 @@
-#include "netconnection.h"
+#include "websocketconnection.h"
 
-#include "networkmanager.h"
+#include "aoapplication.h"
 
 #include <QNetworkRequest>
 #include <QUrl>
 
-NetConnection::NetConnection(QObject *parent)
+WebSocketConnection::WebSocketConnection(AOApplication *ao_app, QObject *parent)
     : QObject(parent)
+    , ao_app(ao_app)
     , m_socket(new QWebSocket(QString(), QWebSocketProtocol::VersionLatest, this))
     , m_last_state(QAbstractSocket::UnconnectedState)
 {
-  connect(m_socket, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::error), this, &NetConnection::onError);
-  connect(m_socket, &QWebSocket::stateChanged, this, &NetConnection::onStateChanged);
-  connect(m_socket, &QWebSocket::textMessageReceived, this, &NetConnection::onTextMessageReceived);
+  connect(m_socket, QOverload<QAbstractSocket::SocketError>::of(&QWebSocket::error), this, &WebSocketConnection::onError);
+  connect(m_socket, &QWebSocket::stateChanged, this, &WebSocketConnection::onStateChanged);
+  connect(m_socket, &QWebSocket::textMessageReceived, this, &WebSocketConnection::onTextMessageReceived);
 }
 
-NetConnection::~NetConnection()
+WebSocketConnection::~WebSocketConnection()
 {
   m_socket->disconnect(this);
   disconnectFromServer();
 }
 
-bool NetConnection::isConnected()
+bool WebSocketConnection::isConnected()
 {
   return m_last_state == QAbstractSocket::ConnectedState;
 }
 
-void NetConnection::connectToServer(ServerInfo &server)
+void WebSocketConnection::connectToServer(const ServerInfo &server)
 {
   disconnectFromServer();
 
   QUrl url;
   url.setScheme("ws");
-  url.setHost(server.ip);
+  url.setHost(server.address);
   url.setPort(server.port);
 
   QNetworkRequest req(url);
-  req.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("SpriteChat"));
+  req.setHeader(QNetworkRequest::UserAgentHeader, QStringLiteral("AttorneyOnline/%1 (Desktop)").arg(ao_app->get_version_string()));
 
   m_socket->open(req);
 }
 
-void NetConnection::disconnectFromServer()
+void WebSocketConnection::disconnectFromServer()
 {
   if (isConnected())
   {
@@ -49,17 +50,17 @@ void NetConnection::disconnectFromServer()
   }
 }
 
-void NetConnection::sendPacket(AOPacket packet)
+void WebSocketConnection::sendPacket(AOPacket packet)
 {
   m_socket->sendTextMessage(packet.toString(true));
 }
 
-void NetConnection::onError()
+void WebSocketConnection::onError()
 {
   Q_EMIT errorOccurred(m_socket->errorString());
 }
 
-void NetConnection::onStateChanged(QAbstractSocket::SocketState state)
+void WebSocketConnection::onStateChanged(QAbstractSocket::SocketState state)
 {
   m_last_state = state;
   switch (state)
@@ -77,7 +78,7 @@ void NetConnection::onStateChanged(QAbstractSocket::SocketState state)
   }
 }
 
-void NetConnection::onTextMessageReceived(QString message)
+void WebSocketConnection::onTextMessageReceived(QString message)
 {
   if (!message.endsWith("#%"))
   {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "datatypes.h"
+#include "network/serverinfo.h"
 
 #include <QDialog>
 #include <QDialogButtonBox>
@@ -19,8 +19,6 @@ public:
   ServerEditorDialog(const ServerInfo &server, QWidget *parent = nullptr);
 
   ServerInfo currentServerInfo() const;
-
-  void loadServerInfo(ServerInfo server);
 
 private:
   static const QString UI_FILE_PATH;

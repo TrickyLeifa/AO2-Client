@@ -8,8 +8,8 @@
 
 #include <QDebug>
 #include <QDirIterator>
+#include <QImageReader>
 #include <QLibraryInfo>
-#include <QPluginLoader>
 #include <QResource>
 #include <QTranslator>
 
@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
   }
 #endif
 
-  QApplication::addLibraryPath(QApplication::applicationDirPath() + "/lib");
+  QApplication::addLibraryPath(QApplication::applicationDirPath() + "/external");
 
   QStringList formats;
   {

@@ -9,13 +9,13 @@
 
 #include <bass.h>
 
-#include <QApplication>
 #include <QColor>
 #include <QCryptographicHash>
 #include <QDebug>
 #include <QDir>
 #include <QElapsedTimer>
 #include <QFile>
+#include <QObject>
 #include <QRect>
 #include <QScreen>
 #include <QSettings>
@@ -309,10 +309,10 @@ public:
   QString get_emote_property(QString p_char, QString p_emote, QString p_property);
 
   // Return a transformation mode from a string ("smooth" for smooth, anything else for fast)
-  Qt::TransformationMode get_scaling(QString p_scaling);
+  RESIZE_MODE get_scaling(QString p_scaling);
 
   // Returns the scaling type for p_miscname
-  Qt::TransformationMode get_misc_scaling(QString p_miscname);
+  RESIZE_MODE get_misc_scaling(QString p_miscname);
 
   // ======
   // These are all casing-related settings.
@@ -326,6 +326,9 @@ public:
 
   // The file name of the log file in base/logs.
   QString log_filename;
+
+  bool pointExistsOnScreen(QPoint point);
+  void centerOrMoveWidgetOnPrimaryScreen(QWidget *widget);
 
   void initBASS();
   static void load_bass_plugins();
@@ -344,6 +347,7 @@ private:
   QStringList m_image_format_list;
 
 public Q_SLOTS:
+  void server_connected();
   void server_disconnected();
   void loading_cancelled();
 

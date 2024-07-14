@@ -133,12 +133,6 @@ public:
   // it's a legacy bg
   void set_background(QString p_background, bool display = false);
 
-  // sets the local character pos/side to use.
-  QString default_side();
-  QString current_side();
-  void set_side(QString p_side);
-  void reset_side();
-
   // sets the pos dropdown
   void set_pos_dropdown(QStringList pos_dropdowns);
   void update_pos_dropdown();
@@ -176,6 +170,7 @@ public:
 
   QString default_side();
   QString current_or_default_side();
+  void set_side(QString p_side);
 
   // updates character to p_cid and updates necessary ui elements
   // Optional "char_name" is the iniswap we're using

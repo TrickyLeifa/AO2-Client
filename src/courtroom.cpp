@@ -1471,16 +1471,6 @@ void Courtroom::set_background(QString p_background, bool display)
   }
 }
 
-QString Courtroom::default_side()
-{
-  return ao_app->get_char_side(current_char);
-}
-
-QString Courtroom::current_side()
-{
-  return ui_pos_dropdown->currentData(Qt::UserRole).toString();
-}
-
 void Courtroom::set_side(QString p_side)
 {
   ui_pos_dropdown->setCurrentText(p_side);
@@ -1493,6 +1483,7 @@ void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
   ui_pos_dropdown->clear();
   for (int n = 0; n < pos_dropdowns.size(); ++n)
   {
+    int &i = n;
     QString pos = pos_dropdowns.at(n);
 
     ui_pos_dropdown->addItem(pos);
@@ -1500,7 +1491,7 @@ void Courtroom::set_pos_dropdown(QStringList pos_dropdowns)
     QPixmap image = QPixmap(ao_app->get_image_suffix(ao_app->get_background_path(ao_app->get_pos_path(pos).background)));
     if (!image.isNull())
     {
-      ui_pos_dropdown->setItemIcon(i, QPixmap(image_path).scaledToHeight(ui_pos_dropdown->iconSize().height()));
+      ui_pos_dropdown->setItemIcon(i, image.scaledToHeight(ui_pos_dropdown->iconSize().height()));
     }
   }
 
@@ -1923,11 +1914,6 @@ Courtroom::JudgeState Courtroom::get_judge_state()
 void Courtroom::set_judge_state(JudgeState new_state)
 {
   judge_state = new_state;
-}
-
-void Courtroom::set_judge_buttons()
-{
-  show_judge_controls(ao_app->get_pos_is_judge(current_or_default_side()));
 }
 
 void Courtroom::closeEvent(QCloseEvent *event)
@@ -4894,7 +4880,7 @@ void Courtroom::set_hp_bar(int p_bar, int p_state)
 
 void Courtroom::show_judge_controls()
 {
-  bool visible = ao_app->get_pos_is_judge(current_side());
+  bool visible = ao_app->get_pos_is_judge(current_or_default_side());
 
   if (judge_state != POS_DEPENDENT)
   {
@@ -5200,7 +5186,7 @@ void Courtroom::on_pos_dropdown_changed(QString p_side)
     ui_pos_remove->show();
   }
 
-  set_judge_buttons();
+  show_judge_controls();
 }
 
 void Courtroom::on_pos_dropdown_context_menu_requested(const QPoint &pos)

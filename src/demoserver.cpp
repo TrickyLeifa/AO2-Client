@@ -74,7 +74,7 @@ void DemoServer::accept_connection()
     num_chars = 0;
   }
 
-  if (m_socket)
+  if (client_sock)
   {
     // Client is already connected...
     qWarning() << "Multiple connections to demo server disallowed.";
@@ -479,6 +479,6 @@ void DemoServer::playback()
 
 void DemoServer::client_disconnect()
 {
-  m_socket->deleteLater();
-  m_socket = nullptr;
+  client_sock->deleteLater();
+  client_sock = nullptr;
 }
